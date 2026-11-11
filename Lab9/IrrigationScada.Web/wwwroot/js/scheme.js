@@ -7,6 +7,12 @@
     async function refresh() {
         try {
             const response = await fetch('/Scheme/Values', { cache: 'no-store' });
+            // ЛР №9: сеанс завершився — сервер перенаправив запит на Login (HTML замість JSON).
+            // Перезавантажуємо сторінку, щоб користувач побачив форму входу.
+            if (response.redirected) {
+                window.location.reload();
+                return;
+            }
             if (!response.ok) return;
             const readings = await response.json();
 

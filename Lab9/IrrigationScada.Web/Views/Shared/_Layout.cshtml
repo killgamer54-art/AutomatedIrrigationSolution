@@ -12,9 +12,21 @@
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">SCADA зрошення</a>
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" asp-controller="Scheme" asp-action="Index">Мнемосхема</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Scheme" asp-action="History">Історія</a></li>
+                <ul class="navbar-nav me-auto flex-grow-1">
+                    @* ЛР №9: посилання на сторінки SCADA бачать лише користувачі, що увійшли.
+                       Це лише зручність інтерфейсу — доступ до URL перевіряє сервер ([Authorize]). *@
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Scheme" asp-action="Index">Мнемосхема</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Scheme" asp-action="History">Історія</a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Privacy">Конфіденційність</a>
+                    </li>
                 </ul>
                 <partial name="_LoginPartial" />
             </div>

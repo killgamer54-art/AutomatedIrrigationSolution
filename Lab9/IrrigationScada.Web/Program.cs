@@ -1,5 +1,6 @@
 using IrrigationScada.Web.Data;
 using IrrigationScada.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,20 @@ builder.Services.AddHostedService<MqttListenerService>();
 
 builder.Services.AddControllersWithViews();
 
+// ЛР №9: авторизація. «Закрито за замовчуванням» — кінцеві точки без власних правил
+// доступу вимагають автентифікованого користувача; іменована політика для збереження показань.
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+
+    options.AddPolicy("CanReadSavings", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -37,7 +52,8 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthorization();
+app.UseAuthentication(); // хто звернувся (cookie Identity)
+app.UseAuthorization();  // чи має він доступ до дії
 
 app.MapControllerRoute(
     name: "default",

@@ -36,6 +36,11 @@ IrrigationScada.Web/
 
 Формат повідомлення: `{"value":45.5,"unit":"%","measuredAtUtc":"2026-10-22T14:00:00+00:00"}`
 
+## Асинхронність (документ «Асинхронність у SCADA-проєкті»)
+
+`MqttListenerService.ExecuteAsync` — `async Task`: підключення і підписка через `await`, повторне підключення в циклі до `stoppingToken`
+з паузою `await Task.Delay(5000, stoppingToken)`. У вебпроєкті немає `.Wait()`, `.Result`, `.GetAwaiter().GetResult()` і `Thread.Sleep`.
+
 ## Запуск
 
 1. Запустити MQTT-брокер Mosquitto на `127.0.0.1:1883`.

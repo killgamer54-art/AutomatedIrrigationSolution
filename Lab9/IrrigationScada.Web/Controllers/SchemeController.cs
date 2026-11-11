@@ -1,10 +1,13 @@
 using IrrigationScada.Web.Data;
 using IrrigationScada.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace IrrigationScada.Web.Controllers;
 
+// ЛР №9: усі дії контролера доступні лише автентифікованим користувачам
+[Authorize]
 public class SchemeController : Controller
 {
     private readonly LiveValuesCache _cache;
@@ -32,6 +35,8 @@ public class SchemeController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]                // захист від CSRF
+    [Authorize(Policy = "CanReadSavings")]    // іменована політика на запис у БД
     public async Task<IActionResult> Save()
     {
         foreach (var r in _cache.GetAll())

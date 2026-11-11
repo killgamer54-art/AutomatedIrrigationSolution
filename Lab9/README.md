@@ -1,39 +1,30 @@
-# Лабораторна робота №9 — асинхронність у SCADA-проєкті
+# Лабораторна робота №9 — автентифікація та авторизація користувачів і захист сторінок SCADA-системи
 
 **Варіант №9:** система зрошення сільськогосподарських угідь.
 **Виконав:** студент Шкурат К. Ю.
 
-ASP.NET Core MVC (.NET 8), Entity Framework Core + SQL Server LocalDB, MQTTnet 4.
+ASP.NET Core MVC (.NET 8), ASP.NET Core Identity (Individual Accounts), EF Core + SQL Server LocalDB, MQTTnet 4.
+Рішення продовжує лабораторну роботу №8 (папка `Lab8`, з асинхронними змінами). Симулятор, бібліотека класів і структура БД не змінювались.
 
-Папка містить повне рішення SCADA-системи (стан після ЛР8) з асинхронними змінами до лабораторних робіт №6 і №8.
-Ті самі зміни внесено й у папки `Lab6`, `Lab7` і `Lab8`.
+## Змінені файли вебпроєкту `IrrigationScada.Web`
 
-## Зміни до лабораторної роботи №6 — фоновий MQTT-сервіс
-
-Файл `IrrigationScada.Web/Services/MqttListenerService.cs` (клас `MqttListenerService : BackgroundService`):
-
-| Вимога | Реалізація |
+| Файл | Зміна |
 |---|---|
-| `ExecuteAsync` — `async Task`, без `.Wait()` | `protected override async Task ExecuteAsync(...)`; `await client.ConnectAsync(options, stoppingToken)`, `await client.SubscribeAsync(subscribeOptions, stoppingToken)` |
-| Обробник повідомлень | `client.ApplicationMessageReceivedAsync += e => { ...розбір JSON, _cache.Update(...)...; return Task.CompletedTask; }` |
-| Повторне підключення з паузою | `await Task.Delay(5000, stoppingToken)` замість `Thread.Sleep(5000)`; цикл завершується за `stoppingToken` замість `while (true)` |
-| У вебпроєкті немає `.Wait()`, `.Result`, `.GetAwaiter().GetResult()`, `Thread.Sleep` | Перевірено пошуком по всьому `IrrigationScada.Web` |
-| `Index()` і дію поточних значень у `SchemeController` не змінювати | Не змінювались (дія поточних значень у проєкті називається `Values()`) |
+| `Program.cs` | `AddAuthorization`: `FallbackPolicy` (`RequireAuthenticatedUser`) і іменована політика `CanReadSavings`; явний порядок `UseRouting → UseAuthentication → UseAuthorization` |
+| `Controllers/SchemeController.cs` | `[Authorize]` на класі; над `Save()` — `[HttpPost]`, `[ValidateAntiForgeryToken]`, `[Authorize(Policy = "CanReadSavings")]` |
+| `Controllers/HomeController.cs` | `[AllowAnonymous]` над `Privacy()` і `Error()` (+ `[ResponseCache]` над `Error()`); `Index()` закрита через `FallbackPolicy` |
+| `Views/Shared/_Layout.cshtml` | Посилання «Мнемосхема» та «Історія» показуються лише автентифікованим користувачам; посилання «Конфіденційність» — усім |
+| `wwwroot/js/scheme.js` | У `refresh()` після запиту поточних значень: якщо `response.redirected` — `window.location.reload()` (сеанс завершився) |
 
-## Зміни до лабораторної роботи №8 — `Controllers/SchemeController.cs`
+Додатково створено `Views/Home/Privacy.cshtml` — у проєкті не було сторінки Privacy, яку за завданням потрібно відкривати без входу.
 
-| Було | Стало |
-|---|---|
-| — | `using Microsoft.EntityFrameworkCore;` |
-| `public IActionResult Save()` … `_db.SaveChanges();` | `public async Task<IActionResult> Save()` … `await _db.SaveChangesAsync();` |
-| `public IActionResult History()` … `.ToList();` | `public async Task<IActionResult> History()` … `await …ToListAsync();` |
+Дія поточних значень датчиків у цьому проєкті називається `Values` (`/Scheme/Values`) — це аналог `Current` з методички.
 
-## Запуск і перевірка
+## Перевірка
 
-1. Запустити MQTT-брокер Mosquitto на `127.0.0.1:1883`.
-2. Створити/оновити базу даних: `Update-Database` (Package Manager Console, проєкт `IrrigationScada.Web`).
-3. Запустити `IrrigationScada.Simulator` і `IrrigationScada.Web` (Multiple startup projects, F5).
-4. Перевірити:
-   - мнемосхема відкривається, показання оновлюються автоматично;
-   - кнопка «Зберегти показання» відкриває сторінку «Історія показань»;
-   - після повторних натискань нові записи з'являються зверху.
+1. Запустити Mosquitto (`127.0.0.1:1883`), `IrrigationScada.Simulator` і `IrrigationScada.Web` (F5). За потреби — `Update-Database`.
+2. У приватному вікні: `/Scheme`, `/Scheme/History`, `/Scheme/Values` → сторінка Login з `ReturnUrl`; після входу — повернення на запитану сторінку.
+3. Без входу `/Home/Privacy` відкривається, `/Home/Index` перенаправляє на Login.
+4. Після входу в меню з'являються «Мнемосхема» та «Історія»; «Зберегти показання» записує дані.
+5. Видалити у DevTools поле `__RequestVerificationToken` з форми й натиснути «Зберегти показання» → HTTP 400.
+6. Видалити cookie `.AspNetCore.Identity.Application` на відкритій мнемосхемі → після наступного опитування сторінка перезавантажується і відкривається Login.
