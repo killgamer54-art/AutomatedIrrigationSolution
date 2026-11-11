@@ -1,0 +1,64 @@
+@model IReadOnlyList<SensorView>
+@{
+    ViewData["Title"] = "Мнемосхема";
+    var uk = new System.Globalization.CultureInfo("uk-UA");
+    DateTime today = DateTime.Today;
+    DateTime first = new DateTime(today.Year, today.Month, 1);
+    int offset = ((int)first.DayOfWeek + 6) % 7; // початок тижня — понеділок
+    int days = DateTime.DaysInMonth(today.Year, today.Month);
+}
+
+<h2>Мнемосхема системи зрошення</h2>
+
+<div class="scada-page">
+    <div class="scheme">
+        <!-- Технологічна схема: насосна станція → магістраль → клапан → поле -->
+        <div class="equip pump" style="left:30px; top:150px;">Насос<br />P-01</div>
+        <div class="pipe" style="left:130px; top:185px; width:330px;"></div>
+        <div class="equip valve" style="left:460px; top:160px;">Клапан<br />V-01</div>
+        <div class="pipe" style="left:540px; top:185px; width:40px;"></div>
+        <div class="equip field" style="left:580px; top:130px;">Поле<br />(сектор 1)</div>
+
+        @foreach (var s in Model)
+        {
+            <div class="sensor" style="left:@(s.X)px; top:@(s.Y)px;"
+                 data-topic="@s.Topic" data-max="@s.Max">
+                <div class="sensor-name">@s.Name</div>
+                <div><span class="sensor-value">—</span> <span class="sensor-unit">@s.Unit</span></div>
+                <div class="sensor-max">Max: @s.Max</div>
+            </div>
+        }
+    </div>
+
+    <table class="cal">
+        <caption>@uk.TextInfo.ToTitleCase(today.ToString("MMMM yyyy", uk))</caption>
+        <tr>
+            <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Нд</th>
+        </tr>
+        <tr>
+            @for (int i = 0; i < offset; i++)
+            {
+                <td></td>
+            }
+            @for (int d = 1; d <= days; d++)
+            {
+                bool isWeekend = (offset + d - 1) % 7 >= 5;
+                string css = d == today.Day ? "today" : (isWeekend ? "weekend" : "");
+                <td class="@css">@d</td>
+                if ((offset + d) % 7 == 0 && d < days)
+                {
+                    @:</tr><tr>
+                }
+            }
+        </tr>
+    </table>
+</div>
+
+<form asp-action="Save" method="post" class="mt-3">
+    <button type="submit" class="btn btn-success">Зберегти показання</button>
+    <a asp-action="History" class="btn btn-outline-secondary">Історія</a>
+</form>
+
+@section Scripts {
+    <script src="~/js/scheme.js" asp-append-version="true"></script>
+}

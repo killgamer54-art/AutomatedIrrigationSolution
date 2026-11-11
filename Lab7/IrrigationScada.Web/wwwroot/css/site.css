@@ -1,0 +1,105 @@
+html { font-size: 15px; }
+
+/* Мнемосхема */
+.scheme {
+    position: relative;
+    width: 760px;
+    height: 330px;
+    background: #f4f7f4;
+    border: 1px solid #c8d3c8;
+    border-radius: 8px;
+}
+
+.equip {
+    position: absolute;
+    padding: 10px;
+    text-align: center;
+    border: 2px solid #345;
+    border-radius: 6px;
+    background: #fff;
+    font-weight: 600;
+}
+.equip.pump  { width: 100px; height: 70px; border-radius: 50%; padding-top: 14px; }
+.equip.valve { width: 80px; height: 50px; padding: 4px; font-size: 0.85rem; }
+.equip.field { width: 150px; height: 110px; background: #d9f0c8; border-color: #5a8a3a; padding-top: 30px; }
+
+.pipe {
+    position: absolute;
+    height: 8px;
+    background: #3b82c4;
+    border-radius: 4px;
+}
+
+/* Датчики */
+.sensor {
+    position: absolute;
+    min-width: 150px;
+    padding: 6px 10px;
+    background: #fff;
+    border: 2px solid #2e7d32;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+    transition: background-color .3s, border-color .3s;
+}
+.sensor-name  { font-size: 0.8rem; color: #555; }
+.sensor-value { font-size: 1.3rem; font-weight: bold; }
+.sensor-max   { font-size: 0.7rem; color: #888; }
+
+/* Додаткове завдання: аварійне підсвічування при перевищенні порогу Max */
+.sensor.alarm {
+    background: #ffd6d6;
+    border-color: #d32f2f;
+    animation: alarm-blink 1s infinite;
+}
+.sensor.alarm .sensor-value { color: #d32f2f; }
+
+@keyframes alarm-blink {
+    50% { box-shadow: 0 0 12px 3px rgba(211, 47, 47, .7); }
+}
+
+/* ===== ЛР №7: годинник у шапці ===== */
+.scada-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-right: 1rem;
+    line-height: 1.1;
+}
+.scada-clock b {
+    font-size: 1.3rem;
+    font-family: Consolas, monospace;
+}
+.scada-clock small {
+    color: #666;
+}
+/* шапка темна (navbar-dark), тому годинник світлий */
+.navbar-dark .scada-clock b { color: #fff; }
+.navbar-dark .scada-clock small { color: #ccc; }
+
+/* схема та календар поруч */
+.scada-page {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+/* календар */
+.cal {
+    border-collapse: collapse;
+    text-align: center;
+    background: #fff;
+}
+.cal caption {
+    caption-side: top;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+}
+.cal th, .cal td {
+    width: 34px;
+    padding: 4px;
+    border: 1px solid #ddd;
+}
+.cal th { color: #888; font-weight: normal; }
+.cal .weekend { color: #c0392b; }
+.cal .today { background: #4a7a5a; color: #fff; font-weight: bold; }
