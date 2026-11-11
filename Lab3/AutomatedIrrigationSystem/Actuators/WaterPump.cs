@@ -25,5 +25,21 @@ namespace AutomatedIrrigationSystem
             State = PumpState.Off;
             Console.WriteLine($"[Насос {PumpId}] ВИМКНЕНО.");
         }
+
+        // Аварійна зупинка: насос переходить у стан Fault до ручного скидання
+        public void EmergencyStop(string reason)
+        {
+            State = PumpState.Fault;
+            Console.WriteLine($"[Насос {PumpId}] АВАРІЙНА ЗУПИНКА: {reason}");
+        }
+
+        public void ResetFault()
+        {
+            if (State == PumpState.Fault)
+            {
+                State = PumpState.Off;
+                Console.WriteLine($"[Насос {PumpId}] Аварію скинуто оператором.");
+            }
+        }
     }
 }

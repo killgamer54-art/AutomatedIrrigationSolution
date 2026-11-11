@@ -1,18 +1,23 @@
 namespace AutomatedIrrigationSystem
 {
-    // --- КЛАС ДАТЧИКА ТИСКУ ---
-    public class PressureSensor
+    // --- ДАТЧИК ТИСКУ В МАГІСТРАЛІ ---
+    public class PressureSensor : Sensor
     {
-        public double PressureBar { get; private set; }
+        public double PressureBar => Value;
+
+        public PressureSensor(string sensorId)
+            : base(sensorId, "Тиск у магістралі", "бар", 0.0)
+        {
+        }
 
         public double ReadPressure()
         {
-            return PressureBar;
+            return Read();
         }
 
         public void SetPressure(double pressure)
         {
-            PressureBar = pressure;
+            Value = pressure;
         }
     }
 }
