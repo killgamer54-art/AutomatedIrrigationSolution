@@ -24,6 +24,11 @@ ASP.NET Core MVC (.NET 8), Individual Accounts, Entity Framework Core + SQL Serv
 | `SensorView.cs`, `Services/SchemeConfigService.cs` | Поріг `Max` для кожного датчика (температура — 28 °C) |
 | `wwwroot/js/scheme.js`, `wwwroot/css/site.css` | Аварійне підсвічування датчика (клас `alarm`) |
 
+## Асинхронні зміни (ЛР №9)
+
+`SchemeController.Save()` і `History()` переведено на `async Task<IActionResult>` з `SaveChangesAsync()` і `ToListAsync()`;
+у `MqttListenerService` пауза між спробами підключення — `await Task.Delay(5000, stoppingToken)`. Детальніше — у `Lab9/README.md`.
+
 ## Запуск
 
 1. Запустити MQTT-брокер Mosquitto на `127.0.0.1:1883`.

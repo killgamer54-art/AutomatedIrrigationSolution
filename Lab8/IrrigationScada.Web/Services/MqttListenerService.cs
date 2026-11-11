@@ -7,6 +7,8 @@ namespace IrrigationScada.Web.Services;
 
 /// <summary>
 /// Фонова служба: підписується на теми irrigation/9/sensors/# і оновлює LiveValuesCache.
+/// Повністю асинхронна: без .Wait(), .Result і Thread.Sleep — потік пулу не блокується,
+/// і запуск вебзастосунку не затримується.
 /// </summary>
 public class MqttListenerService : BackgroundService
 {
@@ -56,7 +58,7 @@ public class MqttListenerService : BackgroundService
             .WithTopicFilter(f => f.WithTopic(SensorTopics.All))
             .Build();
 
-        // Підключення з повторними спробами, поки застосунок працює
+        // Підключення з повторними спробами, поки застосунок працює (await замість .Wait())
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -73,7 +75,8 @@ public class MqttListenerService : BackgroundService
                 _logger.LogWarning("MQTT-брокер недоступний: {Message}", ex.Message);
             }
 
-            try { await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken); }
+            // Асинхронна пауза між перевірками з'єднання (замість Thread.Sleep(5000))
+            try { await Task.Delay(5000, stoppingToken); }
             catch (OperationCanceledException) { break; }
         }
     }

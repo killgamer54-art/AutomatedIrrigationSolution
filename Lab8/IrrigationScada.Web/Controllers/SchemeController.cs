@@ -1,6 +1,7 @@
 using IrrigationScada.Web.Data;
 using IrrigationScada.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace IrrigationScada.Web.Controllers;
 
@@ -31,7 +32,7 @@ public class SchemeController : Controller
     }
 
     [HttpPost]
-    public IActionResult Save()
+    public async Task<IActionResult> Save()
     {
         foreach (var r in _cache.GetAll())
         {
@@ -43,16 +44,16 @@ public class SchemeController : Controller
                 MeasuredAtUtc = r.MeasuredAtUtc
             });
         }
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
         return RedirectToAction("History");
     }
 
-    public IActionResult History()
+    public async Task<IActionResult> History()
     {
-        var samples = _db.SensorSamples
+        var samples = await _db.SensorSamples
             .OrderByDescending(s => s.Id)
             .Take(50)
-            .ToList();
+            .ToListAsync();
         return View(samples);
     }
 }
