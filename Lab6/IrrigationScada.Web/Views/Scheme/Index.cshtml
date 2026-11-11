@@ -1,0 +1,27 @@
+@model IReadOnlyList<SensorView>
+@{
+    ViewData["Title"] = "Мнемосхема";
+}
+<h2>Мнемосхема системи зрошення</h2>
+
+<div class="scheme">
+    <!-- Технологічна схема: насосна станція → магістраль → клапан → поле -->
+    <div class="equip pump" style="left:30px; top:150px;">Насос<br />P-01</div>
+    <div class="pipe" style="left:130px; top:185px; width:330px;"></div>
+    <div class="equip valve" style="left:460px; top:160px;">Клапан<br />V-01</div>
+    <div class="pipe" style="left:540px; top:185px; width:40px;"></div>
+    <div class="equip field" style="left:580px; top:130px;">Поле<br />(сектор 1)</div>
+
+    @foreach (var s in Model)
+    {
+        <div class="sensor" style="left:@(s.X)px; top:@(s.Y)px;"
+             data-topic="@s.Topic">
+            <div class="sensor-name">@s.Name</div>
+            <div><span class="sensor-value">—</span> <span class="sensor-unit">@s.Unit</span></div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/scheme.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,44 @@
+html { font-size: 15px; }
+
+/* Мнемосхема */
+.scheme {
+    position: relative;
+    width: 760px;
+    height: 330px;
+    background: #f4f7f4;
+    border: 1px solid #c8d3c8;
+    border-radius: 8px;
+}
+
+.equip {
+    position: absolute;
+    padding: 10px;
+    text-align: center;
+    border: 2px solid #345;
+    border-radius: 6px;
+    background: #fff;
+    font-weight: 600;
+}
+.equip.pump  { width: 100px; height: 70px; border-radius: 50%; padding-top: 14px; }
+.equip.valve { width: 80px; height: 50px; padding: 4px; font-size: 0.85rem; }
+.equip.field { width: 150px; height: 110px; background: #d9f0c8; border-color: #5a8a3a; padding-top: 30px; }
+
+.pipe {
+    position: absolute;
+    height: 8px;
+    background: #3b82c4;
+    border-radius: 4px;
+}
+
+/* Датчики */
+.sensor {
+    position: absolute;
+    min-width: 150px;
+    padding: 6px 10px;
+    background: #fff;
+    border: 2px solid #2e7d32;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+.sensor-name  { font-size: 0.8rem; color: #555; }
+.sensor-value { font-size: 1.3rem; font-weight: bold; }

@@ -9,7 +9,4 @@ public class ApplicationDbContext : IdentityDbContext
         : base(options)
     {
     }
-
-    // Лабораторна робота №8: таблиця історії показань датчиків
-    public DbSet<SensorSample> SensorSamples => Set<SensorSample>();
 }

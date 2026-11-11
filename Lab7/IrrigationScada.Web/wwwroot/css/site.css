@@ -39,23 +39,9 @@ html { font-size: 15px; }
     border: 2px solid #2e7d32;
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0,0,0,.15);
-    transition: background-color .3s, border-color .3s;
 }
 .sensor-name  { font-size: 0.8rem; color: #555; }
 .sensor-value { font-size: 1.3rem; font-weight: bold; }
-.sensor-max   { font-size: 0.7rem; color: #888; }
-
-/* Додаткове завдання: аварійне підсвічування при перевищенні порогу Max */
-.sensor.alarm {
-    background: #ffd6d6;
-    border-color: #d32f2f;
-    animation: alarm-blink 1s infinite;
-}
-.sensor.alarm .sensor-value { color: #d32f2f; }
-
-@keyframes alarm-blink {
-    50% { box-shadow: 0 0 12px 3px rgba(211, 47, 47, .7); }
-}
 
 /* ===== ЛР №7: годинник у шапці ===== */
 .scada-clock {
